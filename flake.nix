@@ -12,17 +12,19 @@
   };
 
   outputs = { self, flake-utils, nixpkgs, nur, ... }@inputs:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };
-      in
-      {
-        packages = {
-          default =
-            pkgs.wrapFirefox pkgs.firefox-unwrapped {
-              nativeMessagingHosts = [ pkgs.nur.repos.wolfangaukang.vdhcoapp ];
-            };
-          vdhcoapp = pkgs.nur.repos.wolfangaukang.vdhcoapp;
-        };
-      });
+    flake-utils.lib.eachSystem
+      [ flake-utils.system.x86_64-linux flake-utils.system.aarch64-linux ]
+      (system:
+        let
+          pkgs = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };
+        in
+        {
+          packages = {
+            default =
+              pkgs.wrapFirefox pkgs.firefox-unwrapped {
+                nativeMessagingHosts = [ pkgs.nur.repos.wolfangaukang.vdhcoapp ];
+              };
+            vdhcoapp = pkgs.nur.repos.wolfangaukang.vdhcoapp;
+          };
+        });
 }

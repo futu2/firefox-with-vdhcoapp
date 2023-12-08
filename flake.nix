@@ -13,7 +13,7 @@
 
   outputs = { self, flake-utils, nixpkgs, nur, ... }@inputs:
     flake-utils.lib.eachSystem
-      [ flake-utils.system.lib.x86_64-linux flake-utils.system.lib.aarch64-linux ]
+      [ flake-utils.lib.system.x86_64-linux flake-utils.lib.system.aarch64-linux ]
       (system:
         let
           pkgs = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };

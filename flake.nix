@@ -13,18 +13,23 @@
 
   outputs = { self, flake-utils, nixpkgs, nur, ... }@inputs:
     flake-utils.lib.eachSystem
-      [ flake-utils.lib.system.x86_64-linux flake-utils.lib.system.aarch64-linux ]
+      [ flake-utils.lib.system.x86_64-linux ]
       (system:
         let
           pkgs = import nixpkgs { inherit system; overlays = [ nur.overlay ]; };
         in
         {
-          packages = {
-            default =
+          packages = rec {
+            default = firefox;
+            firefox =
               pkgs.wrapFirefox pkgs.firefox-unwrapped {
                 nativeMessagingHosts = [ pkgs.nur.repos.wolfangaukang.vdhcoapp ];
               };
             vdhcoapp = pkgs.nur.repos.wolfangaukang.vdhcoapp;
+          };
+          apps = rec {
+            firefox = flake-utils.lib.mkApp { drv = self.packages.${system}.firefox; };
+            default = firefox;
           };
         });
 }
